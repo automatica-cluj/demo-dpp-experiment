@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-DemoDppApplication<demo-dpp-app>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "utcluj.aut.demosimpleapp.DemoDppApplication",
+            "projectName": "demo-dpp-app",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

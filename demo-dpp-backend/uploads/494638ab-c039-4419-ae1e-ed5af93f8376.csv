@@ -1,0 +1,11 @@
+Component,Material,Material Type,Source,Recyclable,Origin Country,Certifications
+Display,Aluminosilicate Glass,Inorganic,Mined,Yes,USA,ISO 14001
+Battery,Lithium Cobalt Oxide,Compound,Mined,Partial,DR Congo,Responsible Minerals Assurance Process (RMAP)
+Battery,Graphite,Elemental,Mined,Yes,China,ISO 14001
+Frame,Aluminum,Metal,Recycled,Yes,Canada,Recycled Content Certification
+PCB,Copper,Metal,Mined,Yes,Chile,ISO 9001
+PCB,Fiberglass,Composite,Synthetic,No,Germany,RoHS
+Camera Module,Plastic (Polycarbonate),Polymer,Synthetic,Yes,South Korea,REACH
+Back Cover,Recycled Glass,Inorganic,Recycled,Yes,Japan,Cradle to Cradle Certified
+Speaker,Neodymium,Rare Earth,Mined,Partial,China,RMAP
+Wiring,Tin,Metal,Mined,Yes,Indonesia,RMAP

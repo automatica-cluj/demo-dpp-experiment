@@ -1,0 +1,2234 @@
+openapi: 3.1.0
+info:
+  title: sovity EDC API Wrapper
+  description: "sovity's EDC API Wrapper contains a selection of APIs for multiple\
+    \ consumers, e.g. our EDC UI API, our generic Use Case API, our Commercial Edition\
+    \ APIs, etc. We bundled these APIs, so we can have an easier time generating our\
+    \ API Client Libraries."
+  contact:
+    name: sovity GmbH
+    url: https://github.com/sovity/edc-ce/issues/new/choose
+    email: contact@sovity.de
+  license:
+    name: Apache 2.0
+    url: https://github.com/sovity/edc-ce/blob/main/LICENSE
+  version: 0.0.0
+externalDocs:
+  description: EDC API Wrapper Project in sovity/edc-ce
+  url: https://github.com/sovity/edc-ce/tree/main/extensions/wrapper
+servers:
+- url: https://my-connector/api/management
+tags:
+- name: Enterprise Edition
+  description: sovity Enterprise Edition EDC API Endpoints. Requires our sovity Enterprise
+    Edition EDC Extensions.
+- name: UI
+  description: EDC UI API Endpoints
+- name: Use Case
+  description: Generic Use Case Application API Endpoints.
+paths:
+  /wrapper/ee/connector-limits:
+    get:
+      tags:
+      - Enterprise Edition
+      description: Available and used resources of a connector.
+      operationId: connectorLimits
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorLimits'
+  /wrapper/ee/file-upload/blobs/{blobId}/asset:
+    post:
+      tags:
+      - Enterprise Edition
+      summary: Create an asset from an uploaded file.
+      description: Creates an asset using the uploaded file as data source.
+      operationId: fileUploadCreateAsset
+      parameters:
+      - name: blobId
+        in: path
+        description: The Blob ID / URL the file was uploaded into.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Metadata for the Asset. File-related metadata might be overridden.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UiAssetCreateRequest'
+        required: true
+      responses:
+        default:
+          description: default response
+          content:
+            '*/*': {}
+  /wrapper/ee/file-upload/blobs:
+    post:
+      tags:
+      - Enterprise Edition
+      summary: Requests a Blob for file upload.
+      description: Requests a Blob URL with a SAS Token so that the UI can directly
+        upload the file to the Azure Blob Storage. Returns the Blob ID / Token.
+      operationId: fileUploadRequestSasToken
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                type: string
+  /wrapper/ui/build-info:
+    get:
+      tags:
+      - UI
+      description: Get the build version info
+      operationId: buildInfo
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildInfo'
+  /wrapper/ui/pages/asset-page/assets:
+    post:
+      tags:
+      - UI
+      description: Create a new Asset
+      operationId: createAsset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UiAssetCreateRequest'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+  /wrapper/ui/pages/contract-definition-page/contract-definitions:
+    post:
+      tags:
+      - UI
+      description: Create a new Contract Definition
+      operationId: createContractDefinition
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractDefinitionRequest'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+  /wrapper/ui/pages/create-data-offer:
+    post:
+      tags:
+      - UI
+      description: "Create a new asset, contract definition and optional policies.\
+        \ Uses the same id for the asset, the contract policy, the access policy and\
+        \ the contract definition"
+      operationId: createDataOffer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataOfferCreateRequest'
+      responses:
+        default:
+          description: "On success: the id (identical) for the created asset, policy\
+            \ and contract definition)"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+  /wrapper/ui/pages/policy-page/policy-definitions:
+    post:
+      tags:
+      - UI
+      description: "[Deprecated] Create a new Policy Definition from a list of constraints.\
+        \ Use createPolicyDefinitionV2 instead."
+      operationId: createPolicyDefinition
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyDefinitionCreateRequest'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+      deprecated: true
+  /wrapper/ui/v2/pages/policy-page/policy-definitions:
+    post:
+      tags:
+      - UI
+      description: Create a new Policy Definition
+      operationId: createPolicyDefinitionV2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyDefinitionCreateDto'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+  /wrapper/ui/pages/asset-page/assets/{assetId}:
+    put:
+      tags:
+      - UI
+      description: Updates an Asset's metadata and optionally also the data source.
+      operationId: editAsset
+      parameters:
+      - name: assetId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UiAssetEditRequest'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+    delete:
+      tags:
+      - UI
+      description: Delete an Asset
+      operationId: deleteAsset
+      parameters:
+      - name: assetId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+  /wrapper/ui/pages/contract-definition-page/contract-definitions/{contractDefinitionId}:
+    delete:
+      tags:
+      - UI
+      description: Delete a Contract Definition
+      operationId: deleteContractDefinition
+      parameters:
+      - name: contractDefinitionId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+  /wrapper/ui/pages/policy-page/policy-definitions/{policyId}:
+    delete:
+      tags:
+      - UI
+      description: Delete a Policy Definition
+      operationId: deletePolicyDefinition
+      parameters:
+      - name: policyId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+  /wrapper/ui/pages/asset-page:
+    get:
+      tags:
+      - UI
+      description: Collect all data for Asset Page
+      operationId: getAssetPage
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetPage'
+  /wrapper/ui/pages/catalog-page/data-offers:
+    get:
+      tags:
+      - UI
+      description: Fetch a connector's data offers
+      operationId: getCatalogPageDataOffers
+      parameters:
+      - name: participantId
+        in: query
+        schema:
+          type: string
+      - name: connectorEndpoint
+        in: query
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UiDataOffer'
+  /wrapper/ui/pages/contract-agreement-page/{contractAgreementId}:
+    get:
+      tags:
+      - UI
+      description: Get a single contract agreement card by its identifier
+      operationId: getContractAgreementCard
+      parameters:
+      - name: contractAgreementId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractAgreementCard'
+  /wrapper/ui/pages/contract-agreement-page:
+    post:
+      tags:
+      - UI
+      description: Collect filtered data for the Contract Agreement Page
+      operationId: getContractAgreementPage
+      requestBody:
+        description: "If null, returns all the contract agreements."
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractAgreementPageQuery'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractAgreementPage'
+  /wrapper/ui/pages/contract-definition-page:
+    get:
+      tags:
+      - UI
+      description: Collect all data for Contract Definition Page
+      operationId: getContractDefinitionPage
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractDefinitionPage'
+  /wrapper/ui/pages/catalog-page/contract-negotiations/{contractNegotiationId}:
+    get:
+      tags:
+      - UI
+      description: Get Contract Negotiation Information
+      operationId: getContractNegotiation
+      parameters:
+      - name: contractNegotiationId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UiContractNegotiation'
+  /wrapper/ui/pages/dashboard-page:
+    get:
+      tags:
+      - UI
+      description: Collect all data for the Dashboard Page
+      operationId: getDashboardPage
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardPage'
+  /wrapper/ui/pages/policy-page:
+    get:
+      tags:
+      - UI
+      description: Collect all data for Policy Definition Page
+      operationId: getPolicyDefinitionPage
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyDefinitionPage'
+  /wrapper/ui/pages/transfer-history-page:
+    get:
+      tags:
+      - UI
+      description: Collect all data for the Transfer History Page
+      operationId: getTransferHistoryPage
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferHistoryPage'
+  /wrapper/ui/pages/transfer-history-page/transfer-processes/{transferProcessId}/asset:
+    get:
+      tags:
+      - UI
+      description: Queries a transfer process' asset
+      operationId: getTransferProcessAsset
+      parameters:
+      - name: transferProcessId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UiAsset'
+  /wrapper/ui/pages/catalog-page/contract-negotiations:
+    post:
+      tags:
+      - UI
+      description: Initiate a new Contract Negotiation
+      operationId: initiateContractNegotiation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractNegotiationRequest'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UiContractNegotiation'
+  /wrapper/ui/pages/contract-agreement-page/transfers/custom:
+    post:
+      tags:
+      - UI
+      description: "Initiate a Transfer Process via a custom Transfer Process JSON-LD.\
+        \ Fields such as connectorId, assetId, providerConnectorId, providerConnectorAddress\
+        \ will be set automatically."
+      operationId: initiateCustomTransfer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitiateCustomTransferRequest'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+  /wrapper/ui/pages/contract-agreement-page/transfers:
+    post:
+      tags:
+      - UI
+      description: Initiate a Transfer Process
+      operationId: initiateTransfer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitiateTransferRequest'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+  /wrapper/ui/pages/data-offer-page/validate-asset-id/{assetId}:
+    get:
+      tags:
+      - UI
+      description: Validates if the provided assetId is already taken
+      operationId: isAssetIdAvailable
+      parameters:
+      - name: assetId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdAvailabilityResponse'
+  /wrapper/ui/pages/data-offer-page/validate-contract-definition-id/{contractDefinitionId}:
+    get:
+      tags:
+      - UI
+      description: Validates if the provided contractDefinitionId is already taken
+      operationId: isContractDefinitionIdAvailable
+      parameters:
+      - name: contractDefinitionId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdAvailabilityResponse'
+  /wrapper/ui/pages/data-offer-page/validate-policy-id/{policyId}:
+    get:
+      tags:
+      - UI
+      description: Validates if the provided policyId is already taken
+      operationId: isPolicyIdAvailable
+      parameters:
+      - name: policyId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdAvailabilityResponse'
+  /wrapper/ui/pages/content-agreement-page/{contractAgreementId}/terminate:
+    post:
+      tags:
+      - UI
+      description: Terminates a contract agreement designated by its contract agreement
+        id.
+      operationId: terminateContractAgreement
+      parameters:
+      - name: contractAgreementId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractTerminationRequest'
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponseDto'
+  /wrapper/ui/config:
+    get:
+      tags:
+      - UI
+      description: Get the UI configuration
+      operationId: uiConfig
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UiConfig'
+  /wrapper/use-case-api/kpis:
+    get:
+      tags:
+      - Use Case
+      description: Basic KPIs about the running EDC Connector.
+      operationId: getKpis
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KpiResult'
+  /wrapper/use-case-api/supported-policy-functions:
+    get:
+      tags:
+      - Use Case
+      description: "List available functions in policies, prohibitions and obligations."
+      operationId: getSupportedFunctions
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /wrapper/use-case-api/catalog:
+    post:
+      tags:
+      - Use Case
+      description: Fetch a connector's data offers
+      operationId: queryCatalog
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogQuery'
+        required: true
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UiDataOffer'
+components:
+  schemas:
+    ConnectorLimits:
+      type: object
+      description: Available and used resources of a connector.
+      properties:
+        numActiveConsumingContractAgreements:
+          type: integer
+          format: int32
+          description: Current amount of active consuming contract agreements.
+        maxActiveConsumingContractAgreements:
+          type: integer
+          format: int32
+          description: Maximum amount of active consuming contract agreements. A value
+            of 'null' or a negative value means that there are no limit.
+      required:
+      - numActiveConsumingContractAgreements
+    DataSourceType:
+      type: string
+      description: Supported Data Source Types by UiDataSource
+      enum:
+      - HTTP_DATA
+      - ON_REQUEST
+      - CUSTOM
+    SecretValue:
+      type: object
+      description: A value either inlined or to be fetched from the Vault. Raw secret
+        values will land in the database and will be retrievable via the Eclipse EDC
+        Management API.
+      properties:
+        secretName:
+          type: string
+          description: Secret Name / Vault Key Name.
+          example: myApiAuthKey
+        rawValue:
+          type: string
+          description: Raw inline Value.
+          example: <auth key here>
+    UiAssetCreateRequest:
+      type: object
+      description: Type-safe data offer metadata for creating an asset as supported
+        by the sovity product landscape. Contains extension points.
+      properties:
+        dataSource:
+          $ref: '#/components/schemas/UiDataSource'
+          description: Data Source
+        id:
+          type: string
+          description: Asset Id
+        title:
+          type: string
+          description: Asset Title
+        language:
+          type: string
+          description: Asset Language
+        description:
+          type: string
+          description: Asset Description
+        publisherHomepage:
+          type: string
+          description: Asset Homepage
+        licenseUrl:
+          type: string
+          description: License URL
+        version:
+          type: string
+          description: Version
+        keywords:
+          type: array
+          description: Asset Keywords
+          items:
+            type: string
+        mediaType:
+          type: string
+          description: Asset MediaType
+        landingPageUrl:
+          type: string
+          description: Landing Page URL
+        dataCategory:
+          type: string
+          description: Data Category
+        dataSubcategory:
+          type: string
+          description: Data Subcategory
+        dataModel:
+          type: string
+          description: Data Model
+        geoReferenceMethod:
+          type: string
+          description: Geo-Reference Method
+        transportMode:
+          type: string
+          description: Transport Mode
+        sovereignLegalName:
+          type: string
+          description: The sovereign is distinct from the publisher by being the legal
+            owner of the data.
+        geoLocation:
+          type: string
+          description: Geo location
+        nutsLocations:
+          type: array
+          description: Locations by NUTS standard which divides countries into administrative
+            divisions
+          items:
+            type: string
+        dataSampleUrls:
+          type: array
+          description: Data sample URLs
+          items:
+            type: string
+        referenceFileUrls:
+          type: array
+          description: Reference file/schema URLs
+          items:
+            type: string
+        referenceFilesDescription:
+          type: string
+          description: Additional information on reference files/schemas
+        conditionsForUse:
+          type: string
+          description: Instructions for use that are not legally relevant e.g. information
+            on how to cite the dataset in papers
+        dataUpdateFrequency:
+          type: string
+          description: Data update frequency
+        temporalCoverageFrom:
+          type: string
+          format: date
+          description: Temporal coverage start date
+        temporalCoverageToInclusive:
+          type: string
+          format: date
+          description: Temporal coverage end date (inclusive)
+        customJsonAsString:
+          type: string
+          description: Contains serialized custom properties in the JSON format.
+        customJsonLdAsString:
+          type: string
+          description: "Contains serialized custom properties in the JSON LD format.\
+            \ Contrary to the customJsonAsString field, this string must represent\
+            \ a JSON LD object and will be affected by JSON LD compaction and expansion.\
+            \ Due to a technical limitation, the properties can't be booleans."
+        privateCustomJsonAsString:
+          type: string
+          description: Same as customJsonAsString but the data will be stored in the
+            private properties.
+        privateCustomJsonLdAsString:
+          type: string
+          description: Same as customJsonLdAsString but the data will be stored in
+            the private properties. The same limitations apply.
+      required:
+      - dataSource
+      - id
+    UiDataSource:
+      type: object
+      description: Type-safe data source as supported by the sovity product landscape.
+        Contains extension points for using custom data address properties.
+      properties:
+        type:
+          $ref: '#/components/schemas/DataSourceType'
+          default: CUSTOM
+          description: Data Address Type.
+        httpData:
+          $ref: '#/components/schemas/UiDataSourceHttpData'
+          description: Only for type HTTP_DATA
+        onRequest:
+          $ref: '#/components/schemas/UiDataSourceOnRequest'
+          description: Only for type ON_REQUEST
+        customProperties:
+          type: object
+          additionalProperties:
+            type: string
+          description: For all types. Custom Data Address Properties.
+      required:
+      - type
+    UiDataSourceHttpData:
+      type: object
+      description: HTTP_DATA type Data Source.
+      properties:
+        method:
+          $ref: '#/components/schemas/UiDataSourceHttpDataMethod'
+          default: GET
+          description: HTTP Request Method
+        baseUrl:
+          type: string
+          description: "HTTP Request URL. If parameterized, additional pathParams\
+            \ will be joined onto existing one."
+          example: https://my-app.my-org.com/api/edc-data-offer/v1
+        queryString:
+          type: string
+          description: HTTP Request Query Params / Query String.
+          example: search=example&limit=10
+        authHeaderName:
+          type: string
+          description: Auth Header name. The auth header is handled specially by the
+            EDC as its value can be read from a vault.
+          example: Authorization
+        authHeaderValue:
+          $ref: '#/components/schemas/SecretValue'
+          description: Auth Header value.
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: HTTP Request Headers. HTTP Header Parameterization is not available.
+        enableMethodParameterization:
+          type: boolean
+          default: "false"
+          description: "Enable Method Parameterization. This forces consumers to provide\
+            \ a method, otherwise the transfer will fail."
+        enablePathParameterization:
+          type: boolean
+          default: "false"
+          description: Enable Path Parameterization.
+        enableQueryParameterization:
+          type: boolean
+          default: "false"
+          description: Enable Query Parameterization. Any additionally provided queryString
+            will be merged with the existing one.
+        enableBodyParameterization:
+          type: boolean
+          default: "false"
+          description: "Enable Body Parameterization. Forces the provider to provide\
+            \ both a request body and a content type. Only Methods POST, PUT and PATCH\
+            \ allow request bodies."
+      required:
+      - baseUrl
+    UiDataSourceHttpDataMethod:
+      type: string
+      description: Supported HTTP Methods by UiDataSource
+      enum:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - OPTIONS
+    UiDataSourceOnRequest:
+      type: object
+      description: ON_REQUEST type Data Source.
+      properties:
+        contactEmail:
+          type: string
+          description: Contact E-Mail address
+          example: contact@my-org.com
+        contactPreferredEmailSubject:
+          type: string
+          description: Contact Preferred E-Mail Subject
+          example: "Department XYZ Data Offer Request - My Product, My API"
+      required:
+      - contactEmail
+      - contactPreferredEmailSubject
+    BuildInfo:
+      type: object
+      description: Build information about the connector backend.
+      properties:
+        buildDate:
+          type: string
+          description: Container build date. May be overridden.
+          example: 2021-02-03T04:05:06.789Z
+        buildVersion:
+          type: string
+          description: Container build release version or a combination of last tag
+            + commit hash. May be overridden.
+          example: v4.5.1-1445-gff95cb8e2
+      required:
+      - buildDate
+      - buildVersion
+    IdResponseDto:
+      type: object
+      description: Marks the operation as successful
+      properties:
+        id:
+          type: string
+          description: ID
+        lastUpdatedDate:
+          type: string
+          format: date-time
+          description: Change Date
+      required:
+      - id
+      - lastUpdatedDate
+    ContractDefinitionRequest:
+      type: object
+      description: Data for creating a Contract Definition
+      properties:
+        contractDefinitionId:
+          type: string
+          description: Contract Definition ID
+        contractPolicyId:
+          type: string
+          description: Contract Policy ID
+        accessPolicyId:
+          type: string
+          description: Access Policy ID
+        assetSelector:
+          type: array
+          description: List of Criteria for the contract
+          items:
+            $ref: '#/components/schemas/UiCriterion'
+      required:
+      - accessPolicyId
+      - assetSelector
+      - contractDefinitionId
+      - contractPolicyId
+    UiCriterion:
+      type: object
+      description: Contract Definition Criterion as supported by the UI
+      properties:
+        operandLeft:
+          type: string
+          description: Left Operand
+        operator:
+          $ref: '#/components/schemas/UiCriterionOperator'
+          description: Operator
+        operandRight:
+          $ref: '#/components/schemas/UiCriterionLiteral'
+          description: Right Operand
+      required:
+      - operandLeft
+      - operandRight
+      - operator
+    UiCriterionLiteral:
+      type: object
+      description: Criterion Literal
+      properties:
+        type:
+          $ref: '#/components/schemas/UiCriterionLiteralType'
+        value:
+          type: string
+          description: Only for type VALUE. The single value representation.
+        valueList:
+          type: array
+          description: "Only for type VALUE_LIST. List of values, e.g. for the IN-Operator."
+          items:
+            type: string
+    UiCriterionLiteralType:
+      type: string
+      description: Value type of an asset selector criterion right expression value
+      enum:
+      - VALUE
+      - VALUE_LIST
+    UiCriterionOperator:
+      type: string
+      description: Operator for constraints
+      enum:
+      - EQ
+      - IN
+      - LIKE
+    DataOfferCreateRequest:
+      type: object
+      description: Request to create a data offer
+      properties:
+        asset:
+          $ref: '#/components/schemas/UiAssetCreateRequest'
+          description: The asset to create
+        publishType:
+          $ref: '#/components/schemas/DataOfferPublishType'
+        policyExpression:
+          $ref: '#/components/schemas/UiPolicyExpression'
+          description: Policy Expression. Only relevant if policyType is 'RESTRICTED'
+      required:
+      - asset
+      - publishType
+    DataOfferPublishType:
+      type: string
+      description: |
+        Decides whether the data offer is to be published published:
+        * `DONT_PUBLISH` - Data offer is not published. Only an asset is created.
+        * `PUBLISH_UNRESTRICTED` - Creates the asset and publishes it using the always-true policy.
+        * `PUBLISH_RESTRICTED` - Creates the asset and publishes it with a newly created policy definition with the given policy expression
+      enum:
+      - DONT_PUBLISH
+      - PUBLISH_UNRESTRICTED
+      - PUBLISH_RESTRICTED
+    OperatorDto:
+      type: string
+      description: Type-Safe ODRL Policy Operator as supported by the sovity product
+        landscape
+      enum:
+      - EQ
+      - NEQ
+      - GT
+      - GEQ
+      - LT
+      - LEQ
+      - IN
+      - HAS_PART
+      - IS_A
+      - IS_ALL_OF
+      - IS_ANY_OF
+      - IS_NONE_OF
+    UiPolicyConstraint:
+      type: object
+      description: "ODRL AtomicConstraint as supported by the sovity product landscape.\
+        \ For example 'a EQ b', 'c IN [d, e, f]'"
+      properties:
+        left:
+          type: string
+          description: Left side of the expression.
+        operator:
+          $ref: '#/components/schemas/OperatorDto'
+          description: "Operator, e.g. EQ"
+        right:
+          $ref: '#/components/schemas/UiPolicyLiteral'
+          description: Right side of the expression
+      required:
+      - left
+      - operator
+      - right
+    UiPolicyExpression:
+      type: object
+      description: ODRL constraint as supported by the sovity product landscape
+      properties:
+        type:
+          $ref: '#/components/schemas/UiPolicyExpressionType'
+          description: Expression type
+        expressions:
+          type: array
+          description: "Only for types AND, OR, XONE. List of sub-expressions to be\
+            \ evaluated according to the expressionType."
+          items:
+            $ref: '#/components/schemas/UiPolicyExpression'
+        constraint:
+          $ref: '#/components/schemas/UiPolicyConstraint'
+          description: Only for type CONSTRAINT. A single constraint.
+      required:
+      - type
+    UiPolicyExpressionType:
+      type: string
+      description: |
+        Ui Policy Expression types:
+        * `CONSTRAINT` - Expression 'a=b'
+        * `AND` - Conjunction of several expressions. Evaluates to true iff all child expressions are true.
+        * `OR` - Disjunction of several expressions. Evaluates to true iff at least one child expression is true.
+        * `XONE` - XONE operation. Evaluates to true iff exactly one child expression is true.
+      enum:
+      - EMPTY
+      - CONSTRAINT
+      - AND
+      - OR
+      - XONE
+    UiPolicyLiteral:
+      type: object
+      description: "Sum type: A String, a list of Strings or a generic JSON value."
+      properties:
+        type:
+          $ref: '#/components/schemas/UiPolicyLiteralType'
+          description: Value Type
+        value:
+          type: string
+          description: Only for types STRING and JSON
+        valueList:
+          type: array
+          description: Only for type STRING_LIST
+          items:
+            type: string
+      required:
+      - type
+    UiPolicyLiteralType:
+      type: string
+      description: Supported Types of values for the right hand side of an expression
+      enum:
+      - STRING
+      - STRING_LIST
+      - JSON
+    PolicyDefinitionCreateRequest:
+      type: object
+      deprecated: true
+      description: "[Deprecated] Create a Policy Definition. Use PolicyDefinitionCreateDto"
+      properties:
+        policyDefinitionId:
+          type: string
+          description: Policy Definition ID
+        policy:
+          $ref: '#/components/schemas/UiPolicyCreateRequest'
+          deprecated: true
+          description: "[Deprecated] Conjunction of constraints (simplified UiPolicyExpression)"
+      required:
+      - policy
+      - policyDefinitionId
+    UiPolicyCreateRequest:
+      type: object
+      deprecated: true
+      description: "[Deprecated] Conjunction of constraints (simplified UiPolicyExpression)"
+      properties:
+        constraints:
+          type: array
+          deprecated: true
+          description: Conjunction of required constraints
+          items:
+            $ref: '#/components/schemas/UiPolicyConstraint'
+    PolicyDefinitionCreateDto:
+      type: object
+      description: Create a Policy Definition
+      properties:
+        policyDefinitionId:
+          type: string
+          description: Policy Definition ID
+        expression:
+          $ref: '#/components/schemas/UiPolicyExpression'
+          description: Policy Expression
+      required:
+      - expression
+      - policyDefinitionId
+    UiAssetEditRequest:
+      type: object
+      description: Type-safe data offer metadata for editing an asset as supported
+        by the sovity product landscape. Contains extension points.
+      properties:
+        dataSourceOverrideOrNull:
+          $ref: '#/components/schemas/UiDataSource'
+          description: Data Source
+        title:
+          type: string
+          description: Asset Title
+        language:
+          type: string
+          description: Asset Language
+        description:
+          type: string
+          description: Asset Description
+        publisherHomepage:
+          type: string
+          description: Asset Homepage
+        licenseUrl:
+          type: string
+          description: License URL
+        version:
+          type: string
+          description: Version
+        keywords:
+          type: array
+          description: Asset Keywords
+          items:
+            type: string
+        mediaType:
+          type: string
+          description: Asset MediaType
+        landingPageUrl:
+          type: string
+          description: Landing Page URL
+        dataCategory:
+          type: string
+          description: Data Category
+        dataSubcategory:
+          type: string
+          description: Data Subcategory
+        dataModel:
+          type: string
+          description: Data Model
+        geoReferenceMethod:
+          type: string
+          description: Geo-Reference Method
+        transportMode:
+          type: string
+          description: Transport Mode
+        sovereignLegalName:
+          type: string
+          description: The sovereign is distinct from the publisher by being the legal
+            owner of the data.
+        geoLocation:
+          type: string
+          description: Geo location
+        nutsLocations:
+          type: array
+          description: Locations by NUTS standard which divides countries into administrative
+            divisions
+          items:
+            type: string
+        dataSampleUrls:
+          type: array
+          description: Data sample URLs
+          items:
+            type: string
+        referenceFileUrls:
+          type: array
+          description: Reference file/schema URLs
+          items:
+            type: string
+        referenceFilesDescription:
+          type: string
+          description: Additional information on reference files/schemas
+        conditionsForUse:
+          type: string
+          description: Instructions for use that are not legally relevant e.g. information
+            on how to cite the dataset in papers
+        dataUpdateFrequency:
+          type: string
+          description: Data update frequency
+        temporalCoverageFrom:
+          type: string
+          format: date
+          description: Temporal coverage start date
+        temporalCoverageToInclusive:
+          type: string
+          format: date
+          description: Temporal coverage end date (inclusive)
+        customJsonAsString:
+          type: string
+          description: Contains serialized custom properties in the JSON format.
+        customJsonLdAsString:
+          type: string
+          description: "Contains serialized custom properties in the JSON LD format.\
+            \ Contrary to the customJsonAsString field, this string must represent\
+            \ a JSON LD object and will be affected by JSON LD compaction and expansion.\
+            \ Due to a technical limitation, the properties can't be booleans."
+        privateCustomJsonAsString:
+          type: string
+          description: Same as customJsonAsString but the data will be stored in the
+            private properties.
+        privateCustomJsonLdAsString:
+          type: string
+          description: Same as customJsonLdAsString but the data will be stored in
+            the private properties. The same limitations apply.
+    AssetPage:
+      type: object
+      description: All data for the Asset Page
+      properties:
+        assets:
+          type: array
+          description: Visible Assets
+          items:
+            $ref: '#/components/schemas/UiAsset'
+      required:
+      - assets
+    DataSourceAvailability:
+      type: string
+      description: Differentiate 'Live' Data Offers that have a real data source from
+        'On Request' Data Offers that contain only a contact email address for requesting
+        an individual data offer.
+      enum:
+      - LIVE
+      - ON_REQUEST
+    UiAsset:
+      type: object
+      description: Type-safe data offer metadata as supported by the sovity product
+        landscape. Contains extension points.
+      properties:
+        dataSourceAvailability:
+          $ref: '#/components/schemas/DataSourceAvailability'
+          description: '''Live'' vs ''On Request'''
+        assetId:
+          type: string
+          description: Asset Id
+        connectorEndpoint:
+          type: string
+          description: Providing Connector's Connector Endpoint
+        participantId:
+          type: string
+          description: Providing Connector's Participant ID
+        title:
+          type: string
+          description: Asset Title
+        creatorOrganizationName:
+          type: string
+          description: Asset Organization Name
+        onRequestContactEmail:
+          type: string
+          description: Contact E-Mail address. Only for dataSourceAvailability ON_REQUEST.
+          example: contact@my-org.com
+        onRequestContactEmailSubject:
+          type: string
+          description: Contact Preferred E-Mail Subject. Only for dataSourceAvailability
+            ON_REQUEST.
+          example: "Department XYZ Data Offer Request - My Product, My API"
+        language:
+          type: string
+          description: Asset Language
+        description:
+          type: string
+          description: Asset Description. Supports markdown.
+        descriptionShortText:
+          type: string
+          description: Asset Description Short Text generated from description. Contains
+            no markdown.
+        isOwnConnector:
+          type: boolean
+          description: Flag that indicates whether this asset is created by this connector.
+        publisherHomepage:
+          type: string
+          description: Asset Homepage
+        licenseUrl:
+          type: string
+          description: License URL
+        version:
+          type: string
+          description: Version
+        keywords:
+          type: array
+          description: Asset Keywords
+          items:
+            type: string
+        mediaType:
+          type: string
+          description: Asset MediaType
+        landingPageUrl:
+          type: string
+          description: Homepage URL associated with the Asset
+        httpDatasourceHintsProxyMethod:
+          type: boolean
+          description: "HTTP Datasource Hint: Proxy Method. Only for dataSourceAvailability\
+            \ LIVE with an underlying HTTP_DATA Data Source."
+        httpDatasourceHintsProxyPath:
+          type: boolean
+          description: "HTTP Datasource Hint: Proxy Path. Only for dataSourceAvailability\
+            \ LIVE with an underlying HTTP_DATA Data Source."
+        httpDatasourceHintsProxyQueryParams:
+          type: boolean
+          description: "HTTP Datasource Hint: Proxy Query Params. Only for dataSourceAvailability\
+            \ LIVE with an underlying HTTP_DATA Data Source."
+        httpDatasourceHintsProxyBody:
+          type: boolean
+          description: "HTTP Datasource Hint: Proxy Body. Only for dataSourceAvailability\
+            \ LIVE with an underlying HTTP_DATA Data Source."
+        dataCategory:
+          type: string
+          description: Data Category
+        dataSubcategory:
+          type: string
+          description: Data Subcategory
+        dataModel:
+          type: string
+          description: Data Model
+        geoReferenceMethod:
+          type: string
+          description: Geo-Reference Method
+        transportMode:
+          type: string
+          description: Transport Mode
+        sovereignLegalName:
+          type: string
+          description: The sovereign is distinct from the publisher by being the legal
+            owner of the data.
+        geoLocation:
+          type: string
+          description: Geo location
+        nutsLocations:
+          type: array
+          description: Locations by NUTS standard which divides countries into administrative
+            divisions
+          items:
+            type: string
+        dataSampleUrls:
+          type: array
+          description: Data sample URLs
+          items:
+            type: string
+        referenceFileUrls:
+          type: array
+          description: Reference file/schema URLs
+          items:
+            type: string
+        referenceFilesDescription:
+          type: string
+          description: Additional information on reference files/schemas
+        conditionsForUse:
+          type: string
+          description: Instructions for use that are not legally relevant e.g. information
+            on how to cite the dataset in papers
+        dataUpdateFrequency:
+          type: string
+          description: Data update frequency
+        temporalCoverageFrom:
+          type: string
+          format: date
+          description: Temporal coverage start date
+        temporalCoverageToInclusive:
+          type: string
+          format: date
+          description: Temporal coverage end date (inclusive)
+        assetJsonLd:
+          type: string
+          description: Contains the entire asset in the JSON-LD format
+        customJsonAsString:
+          type: string
+          description: Contains serialized custom properties in the JSON format.
+        customJsonLdAsString:
+          type: string
+          description: "Contains serialized custom properties in the JSON LD format.\
+            \ Contrary to the customJsonAsString field, this string must represent\
+            \ a JSON LD object and will be affected by JSON LD compaction and expansion.\
+            \ Due to a technical limitation, the properties can't be booleans."
+        privateCustomJsonAsString:
+          type: string
+          description: Same as customJsonAsString but the data will be stored in the
+            private properties.
+        privateCustomJsonLdAsString:
+          type: string
+          description: Same as customJsonLdAsString but the data will be stored in
+            the private properties. The same limitations apply.
+      required:
+      - assetId
+      - connectorEndpoint
+      - creatorOrganizationName
+      - dataSourceAvailability
+      - isOwnConnector
+      - participantId
+      - title
+    UiContractOffer:
+      type: object
+      description: Catalog Data Offer's Contract Offer as required by the UI
+      properties:
+        contractOfferId:
+          type: string
+          description: Contract Offer ID
+        policy:
+          $ref: '#/components/schemas/UiPolicy'
+          description: Policy
+      required:
+      - contractOfferId
+      - policy
+    UiDataOffer:
+      type: object
+      description: Catalog Data Offer as required by the UI
+      properties:
+        endpoint:
+          type: string
+          description: Connector Endpoint
+        participantId:
+          type: string
+          description: Participant ID. Required for initiating transfers.
+        asset:
+          $ref: '#/components/schemas/UiAsset'
+          description: Asset Information
+        contractOffers:
+          type: array
+          description: Available Contract Offers
+          items:
+            $ref: '#/components/schemas/UiContractOffer'
+      required:
+      - asset
+      - contractOffers
+      - endpoint
+      - participantId
+    UiPolicy:
+      type: object
+      description: Type-Safe OpenAPI generator friendly ODLR policy subset as endorsed
+        by sovity.
+      properties:
+        policyJsonLd:
+          type: string
+          description: EDC Policy JSON-LD. This is required because the EDC requires
+            the full policy when initiating contract negotiations.
+        expression:
+          $ref: '#/components/schemas/UiPolicyExpression'
+          description: Policy expression
+        errors:
+          type: array
+          description: "When trying to reduce the policy JSON-LD to our opinionated\
+            \ subset of functionalities, many fields and functionalities are unsupported.\
+            \ Should any discrepancies occur during the mapping process, we'll collect\
+            \ them here."
+          items:
+            type: string
+      required:
+      - errors
+      - policyJsonLd
+    ContractAgreementCard:
+      type: object
+      description: Contract Agreement for Contract Agreement Page
+      properties:
+        contractAgreementId:
+          type: string
+          description: Contract Agreement ID
+        contractNegotiationId:
+          type: string
+          description: Contract Negotiation ID
+        direction:
+          $ref: '#/components/schemas/ContractAgreementDirection'
+          description: Incoming vs Outgoing
+        counterPartyAddress:
+          type: string
+          description: Other Connector's Endpoint
+        counterPartyId:
+          type: string
+          description: Other Connector's ID
+        contractSigningDate:
+          type: string
+          format: date-time
+          description: Contract Agreements Signing Date
+        asset:
+          $ref: '#/components/schemas/UiAsset'
+          description: Asset details
+        contractPolicy:
+          $ref: '#/components/schemas/UiPolicy'
+          description: Contract Policy
+        transferProcesses:
+          type: array
+          description: Contract Agreement's Transfer Processes
+          items:
+            $ref: '#/components/schemas/ContractAgreementTransferProcess'
+        terminationStatus:
+          $ref: '#/components/schemas/ContractTerminationStatus'
+          description: Contract Agreement's Termination Status
+        terminationInformation:
+          $ref: '#/components/schemas/ContractAgreementTerminationInfo'
+          description: Contract Agreement's Metadata
+      required:
+      - asset
+      - contractAgreementId
+      - contractNegotiationId
+      - contractPolicy
+      - contractSigningDate
+      - counterPartyAddress
+      - counterPartyId
+      - direction
+      - terminationStatus
+      - transferProcesses
+    ContractAgreementDirection:
+      type: string
+      description: Whether the contract agreement is incoming or outgoing
+      enum:
+      - CONSUMING
+      - PROVIDING
+    ContractAgreementTerminationInfo:
+      type: object
+      description: Contract's agreement metadata
+      properties:
+        terminatedAt:
+          type: string
+          format: date-time
+          description: Termination's date and time
+        reason:
+          type: string
+          description: The termination's nature e.g. User Termination
+          title: Termination's reason
+        detail:
+          type: string
+          description: Detailed message from the terminating party about why the contract
+            was terminated.
+        terminatedBy:
+          $ref: '#/components/schemas/ContractTerminatedBy'
+          description: Indicates whether the termination comes from this EDC or the
+            counterparty EDC.
+      required:
+      - detail
+      - reason
+      - terminatedAt
+      - terminatedBy
+    ContractAgreementTransferProcess:
+      type: object
+      description: A Contract Agreement's Transfer Process
+      properties:
+        transferProcessId:
+          type: string
+          description: Transfer Process ID
+        lastUpdatedDate:
+          type: string
+          format: date-time
+          description: Last Change Date
+        state:
+          $ref: '#/components/schemas/TransferProcessState'
+          description: Current State
+        errorMessage:
+          type: string
+          description: Error Message
+      required:
+      - lastUpdatedDate
+      - state
+      - transferProcessId
+    ContractTerminatedBy:
+      type: string
+      description: Whether the contract termination was initiated by this EDC or a
+        counterparty EDC.
+      enum:
+      - SELF
+      - COUNTERPARTY
+    ContractTerminationStatus:
+      type: string
+      description: The contract termination status
+      enum:
+      - ONGOING
+      - TERMINATED
+    TransferProcessSimplifiedState:
+      type: string
+      description: Simplified Transfer Process State to be used in UI
+      enum:
+      - RUNNING
+      - OK
+      - ERROR
+    TransferProcessState:
+      type: object
+      description: Transfer Process State interpreted
+      properties:
+        name:
+          type: string
+          description: State name or 'CUSTOM'. State names only exist for original
+            EDC Transfer Process States.
+        code:
+          type: integer
+          format: int32
+          description: State code
+        simplifiedState:
+          $ref: '#/components/schemas/TransferProcessSimplifiedState'
+          description: "Whether we are running, in an error state or done."
+      required:
+      - code
+      - name
+      - simplifiedState
+    ContractAgreementPage:
+      type: object
+      description: Data as required by the UI's Contract Agreement Page
+      properties:
+        contractAgreements:
+          type: array
+          description: Contract Agreement Cards
+          items:
+            $ref: '#/components/schemas/ContractAgreementCard'
+      required:
+      - contractAgreements
+    ContractAgreementPageQuery:
+      type: object
+      description: Filters for querying a Contract Contract Agreement Page
+      properties:
+        terminationStatus:
+          $ref: '#/components/schemas/ContractTerminationStatus'
+          description: Optionally filter the resulting contract agreements by their
+            termination status.
+    ContractDefinitionEntry:
+      type: object
+      description: Contract Definition List Entry for Contract Definition Page
+      properties:
+        contractDefinitionId:
+          type: string
+          description: Contract Definition ID
+        accessPolicyId:
+          type: string
+          description: Access Policy ID
+        contractPolicyId:
+          type: string
+          description: Contract Policy ID
+        assetSelector:
+          type: array
+          description: Criteria for the contract
+          items:
+            $ref: '#/components/schemas/UiCriterion'
+      required:
+      - accessPolicyId
+      - assetSelector
+      - contractDefinitionId
+      - contractPolicyId
+    ContractDefinitionPage:
+      type: object
+      properties:
+        contractDefinitions:
+          type: array
+          description: Contract Definition Entries
+          items:
+            $ref: '#/components/schemas/ContractDefinitionEntry'
+      required:
+      - contractDefinitions
+    ContractNegotiationSimplifiedState:
+      type: string
+      description: Simplified Contract Negotiation State to be used in UI
+      enum:
+      - IN_PROGRESS
+      - AGREED
+      - TERMINATED
+    ContractNegotiationState:
+      type: object
+      description: Contract Negotiation State interpreted
+      properties:
+        name:
+          type: string
+          description: State name or 'CUSTOM'. State names only exist for original
+            EDC Contract Negotiation States.
+        code:
+          type: integer
+          format: int32
+          description: State code
+        simplifiedState:
+          $ref: '#/components/schemas/ContractNegotiationSimplifiedState'
+          description: "Whether we are running, in an error state or done."
+      required:
+      - code
+      - name
+      - simplifiedState
+    UiContractNegotiation:
+      type: object
+      description: Contract Negotiation Information
+      properties:
+        contractNegotiationId:
+          type: string
+          description: Contract Negotiation Id
+        createdAt:
+          type: string
+          format: date-time
+          description: Contract Negotiation Creation Time
+        contractAgreementId:
+          type: string
+          description: Contract Agreement Id
+        state:
+          $ref: '#/components/schemas/ContractNegotiationState'
+          description: State of the Contract Negotiation state machine
+      required:
+      - contractNegotiationId
+      - createdAt
+      - state
+    DashboardCxDidConfig:
+      type: object
+      description: Managed Identity Wallet (MIW) Config
+      properties:
+        myDid:
+          type: string
+          description: My DID / edc.iam.issuer.id
+        walletTokenUrl:
+          type: string
+          description: Wallet Token Url / edc.iam.sts.oauth.token.url
+        trustedVcIssuer:
+          type: string
+          description: Trusted VC Issuer / edc.iam.trusted-issuer.cofinity.id
+        bdrsUrl:
+          type: string
+          description: BDRS Url / tx.iam.iatp.bdrs.server.url
+        dimUrl:
+          type: string
+          description: STS DIM Url / edc.iam.sts.dim.url
+      required:
+      - bdrsUrl
+      - dimUrl
+      - myDid
+      - trustedVcIssuer
+      - walletTokenUrl
+    DashboardDapsConfig:
+      type: object
+      description: DAPS Config
+      properties:
+        tokenUrl:
+          type: string
+          description: Your Connector's DAPS Token URL
+        jwksUrl:
+          type: string
+          description: Your Connector's DAPS JWKS URL
+      required:
+      - jwksUrl
+      - tokenUrl
+    DashboardPage:
+      type: object
+      description: Data as required by the UI's Dashboard Page
+      properties:
+        numAssets:
+          type: integer
+          format: int32
+          description: Number of Assets
+        numPolicies:
+          type: integer
+          format: int32
+          description: Number of Policies
+        numContractDefinitions:
+          type: integer
+          format: int32
+          description: Number of Contract Definitions
+        numContractAgreementsConsuming:
+          type: integer
+          format: int64
+          description: Number of consuming Contract Agreements
+        numContractAgreementsProviding:
+          type: integer
+          format: int64
+          description: Number of providing Contract Agreements
+        transferProcessesConsuming:
+          $ref: '#/components/schemas/DashboardTransferAmounts'
+          description: Consuming Transfer Process Amounts
+        transferProcessesProviding:
+          $ref: '#/components/schemas/DashboardTransferAmounts'
+          description: Providing Transfer Process Amounts
+        managementApiUrlShownInDashboard:
+          type: string
+          description: Your Connector's Management API URL for API Users
+        connectorEndpoint:
+          type: string
+          description: Your Connector's Connector Endpoint
+        connectorParticipantId:
+          type: string
+          description: Your Connector's Participant ID
+        connectorTitle:
+          type: string
+          description: Your Connector's Title
+        connectorDescription:
+          type: string
+          description: Your Connector's Description
+        connectorCuratorUrl:
+          type: string
+          description: Your Organization Homepage
+        connectorCuratorName:
+          type: string
+          description: Your Organization Name
+        connectorMaintainerUrl:
+          type: string
+          description: Your Connector's Maintainer's Organization Homepage
+        connectorMaintainerName:
+          type: string
+          description: Your Connector's Maintainer's Organization Name
+        connectorDapsConfig:
+          $ref: '#/components/schemas/DashboardDapsConfig'
+          description: Your Connector's DAPS Configuration (if present)
+        connectorCxDidConfig:
+          $ref: '#/components/schemas/DashboardCxDidConfig'
+          description: Your Connector's Catena-X Web-DID Configuration (if present)
+      required:
+      - connectorCuratorName
+      - connectorCuratorUrl
+      - connectorDescription
+      - connectorEndpoint
+      - connectorMaintainerName
+      - connectorMaintainerUrl
+      - connectorParticipantId
+      - connectorTitle
+      - managementApiUrlShownInDashboard
+      - numAssets
+      - numContractAgreementsConsuming
+      - numContractAgreementsProviding
+      - numContractDefinitions
+      - numPolicies
+      - transferProcessesConsuming
+      - transferProcessesProviding
+    DashboardTransferAmounts:
+      type: object
+      description: Number of Transfer Processes for given direction.
+      properties:
+        numTotal:
+          type: integer
+          format: int64
+          description: Number of Transfer Processes
+        numRunning:
+          type: integer
+          format: int64
+          description: Number of running Transfer Processes
+        numOk:
+          type: integer
+          format: int64
+          description: Number of successful Transfer Processes
+        numError:
+          type: integer
+          format: int64
+          description: Number of failed Transfer Processes
+      required:
+      - numError
+      - numOk
+      - numRunning
+      - numTotal
+    PolicyDefinitionDto:
+      type: object
+      description: Policy Definition as required for the Policy Definition Page
+      properties:
+        policyDefinitionId:
+          type: string
+          description: Policy Definition ID
+        policy:
+          $ref: '#/components/schemas/UiPolicy'
+          description: Policy Contents
+      required:
+      - policy
+      - policyDefinitionId
+    PolicyDefinitionPage:
+      type: object
+      description: All data for the policy definition page as required by the UI
+      properties:
+        policies:
+          type: array
+          description: Policy Definition Entries
+          items:
+            $ref: '#/components/schemas/PolicyDefinitionDto'
+      required:
+      - policies
+    TransferHistoryEntry:
+      type: object
+      description: Transfer History Entry for Transfer History Page
+      properties:
+        transferProcessId:
+          type: string
+          description: Transfer Process ID
+        createdDate:
+          type: string
+          format: date-time
+          description: Created Date
+        lastUpdatedDate:
+          type: string
+          format: date-time
+          description: Last Change Date
+        state:
+          $ref: '#/components/schemas/TransferProcessState'
+          description: Transfer History State
+        contractAgreementId:
+          type: string
+          description: Contract Agreement ID
+        direction:
+          $ref: '#/components/schemas/ContractAgreementDirection'
+          description: Incoming vs Outgoing
+        counterPartyConnectorEndpoint:
+          type: string
+          description: Other Connector's Endpoint
+        counterPartyParticipantId:
+          type: string
+          description: Other Connector's Participant ID
+        assetName:
+          type: string
+          description: Asset Name
+        assetId:
+          type: string
+          description: Asset ID
+        errorMessage:
+          type: string
+          description: Error Message
+      required:
+      - assetId
+      - assetName
+      - contractAgreementId
+      - counterPartyConnectorEndpoint
+      - counterPartyParticipantId
+      - createdDate
+      - direction
+      - lastUpdatedDate
+      - state
+      - transferProcessId
+    TransferHistoryPage:
+      type: object
+      description: Data as required by the UI's Transfer History Page
+      properties:
+        transferEntries:
+          type: array
+          description: Transfer History Page Entries
+          items:
+            $ref: '#/components/schemas/TransferHistoryEntry'
+      required:
+      - transferEntries
+    ContractNegotiationRequest:
+      type: object
+      description: Data for initiating a Contract Negotiation
+      properties:
+        counterPartyId:
+          type: string
+          description: Counter Party Id
+        counterPartyAddress:
+          type: string
+          description: Counter Party Address
+        contractOfferId:
+          type: string
+          description: 'Contract Offer Dto '
+        policyJsonLd:
+          type: string
+          description: Policy JsonLd
+        assetId:
+          type: string
+          description: Asset ID
+      required:
+      - assetId
+      - contractOfferId
+      - counterPartyAddress
+      - counterPartyId
+      - policyJsonLd
+    InitiateCustomTransferRequest:
+      type: object
+      description: Required data for starting a Contract Agreement's Transfer Process
+      properties:
+        contractAgreementId:
+          type: string
+          description: Contract Agreement ID
+        transferProcessRequestJsonLd:
+          type: string
+          description: "Partial TransferProcessRequestJsonLd JSON-LD. Fields participantId,\
+            \ connectorEndpoint, assetId and contractId can be omitted, they will\
+            \ be overridden with information from the contract."
+      required:
+      - contractAgreementId
+      - transferProcessRequestJsonLd
+    InitiateTransferRequest:
+      type: object
+      description: "For type PARAMS_ONLY: Required data for starting a Transfer Process"
+      properties:
+        contractAgreementId:
+          type: string
+          description: Contract Agreement ID
+        transferType:
+          type: string
+          description: "Transfer Type. Used to select a compatible DataPlane. Examples\
+            \ are 'HttpData-PUSH', 'HttpData-PULL'. Not to be confused with the 'type'\
+            \ of the data source, or the 'type' of the data sink found in the 'properties'"
+        dataSinkProperties:
+          type: object
+          additionalProperties:
+            type: string
+          description: Data Sink / Data Address
+        transferProcessProperties:
+          type: object
+          additionalProperties:
+            type: string
+          description: Additional transfer process properties. These are not passed
+            to the consumer EDC
+      required:
+      - contractAgreementId
+      - dataSinkProperties
+      - transferProcessProperties
+      - transferType
+    IdAvailabilityResponse:
+      type: object
+      description: Object indicates whether an ID for the given object type is already
+        taken or not
+      properties:
+        id:
+          type: string
+          description: ID
+        available:
+          type: boolean
+      required:
+      - id
+    ContractTerminationRequest:
+      type: object
+      description: Data for terminating a Contract Agreement
+      properties:
+        detail:
+          type: string
+          description: A user explanation to detail why the contract was terminated.
+          maxLength: 1000
+          minLength: 0
+          title: Termination detail
+        reason:
+          type: string
+          description: A short reason why this contract was terminated
+          maxLength: 100
+          minLength: 0
+          title: Termination reason
+      required:
+      - detail
+      - reason
+    UiConfig:
+      type: object
+      description: UI Config
+      properties:
+        features:
+          type: array
+          description: Enabled features
+          items:
+            $ref: '#/components/schemas/UiConfigFeature'
+        preconfiguredCounterparties:
+          type: array
+          description: Pre-configured Counterparty Connectors
+          items:
+            $ref: '#/components/schemas/UiConfigPreconfiguredCounterparty'
+        logoutUrl:
+          type: string
+          description: Logout URL
+        documentationUrl:
+          type: string
+          description: Documentation URL
+        supportUrl:
+          type: string
+          description: Support URL
+        privacyPolicyUrl:
+          type: string
+          description: Privacy Policy URL
+        legalNoticeUrl:
+          type: string
+          description: Legal Notice URL
+      required:
+      - features
+      - preconfiguredCounterparties
+    UiConfigFeature:
+      type: string
+      description: Enabled UI Features
+      enum:
+      - CONNECTOR_LIMITS
+      - OPEN_SOURCE_MARKETING
+      - EE_BASIC_MARKETING
+    UiConfigPreconfiguredCounterparty:
+      type: object
+      description: Pre-configured counterparty for the Catalog
+      properties:
+        participantId:
+          type: string
+          description: Participant ID
+        connectorEndpoint:
+          type: string
+          description: Connector Endpoint
+      required:
+      - connectorEndpoint
+      - participantId
+    KpiResult:
+      type: object
+      description: EDC-status-defining KPIs
+      properties:
+        assetsCount:
+          type: integer
+          format: int32
+          description: Counts of assets
+        policiesCount:
+          type: integer
+          format: int32
+          description: Counts of policies
+        contractDefinitionsCount:
+          type: integer
+          format: int32
+          description: Counts of contract definitions
+        contractAgreementsCount:
+          type: integer
+          format: int32
+          description: Counts of contract agreements
+        transferProcessDto:
+          $ref: '#/components/schemas/TransferProcessStatesDto'
+          description: Counts of incoming and outgoing TransferProcesses and status
+      required:
+      - assetsCount
+      - contractAgreementsCount
+      - contractDefinitionsCount
+      - policiesCount
+      - transferProcessDto
+    TransferProcessStatesDto:
+      type: object
+      properties:
+        incomingTransferProcessCounts:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+          description: States and count of incoming transferprocess counts
+        outgoingTransferProcessCounts:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+          description: States and counts of outgoing transferprocess counts
+      required:
+      - incomingTransferProcessCounts
+      - outgoingTransferProcessCounts
+    CatalogFilterExpression:
+      type: object
+      description: Generic expression for filtering the data offers in the catalog
+      properties:
+        operandLeft:
+          type: string
+          description: Asset property name
+          example: https://w3id.org/edc/v0.0.1/ns/assetId
+        operator:
+          $ref: '#/components/schemas/CatalogFilterExpressionOperator'
+          description: Operator
+        operandRight:
+          $ref: '#/components/schemas/CatalogFilterExpressionLiteral'
+          description: Right Operand
+      required:
+      - operandLeft
+      - operandRight
+      - operator
+    CatalogFilterExpressionLiteral:
+      type: object
+      description: FilterExpression Criterion Literal
+      properties:
+        type:
+          $ref: '#/components/schemas/CatalogFilterExpressionLiteralType'
+        value:
+          type: string
+          description: Only for type VALUE. The single value representation.
+        valueList:
+          type: array
+          description: "Only for type VALUE_LIST. List of values, e.g. for the IN-Operator."
+          items:
+            type: string
+    CatalogFilterExpressionLiteralType:
+      type: string
+      description: Value type of a filter expression criterion
+      enum:
+      - VALUE
+      - VALUE_LIST
+    CatalogFilterExpressionOperator:
+      type: string
+      description: Operator for filter expressions
+      enum:
+      - LIKE
+      - EQ
+      - IN
+    CatalogQuery:
+      type: object
+      description: Catalog query parameters
+      properties:
+        connectorEndpoint:
+          type: string
+          description: "Target EDC DSP endpoint URL. Can contain a queryParam 'participantId',\
+            \ which is provided by default in the Connector Endpoint in the EDC UI."
+        participantId:
+          type: string
+          description: Target EDC Participant ID. It is required if the connector
+            endpoint does not contain the queryParam 'participantId'.
+        limit:
+          type: integer
+          format: int32
+          description: Limit the number of results
+        offset:
+          type: integer
+          format: int32
+          description: "Offset for returned results, e.g. start at result 2"
+        filterExpressions:
+          type: array
+          description: Filter expressions for catalog filtering
+          items:
+            $ref: '#/components/schemas/CatalogFilterExpression'
+      required:
+      - connectorEndpoint
