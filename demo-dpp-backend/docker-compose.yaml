@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     container_name: springboot-app
-    image: ghcr.io/automatica-cluj/demo-simple-app:v0.9
+    image: ghcr.io/automatica-cluj/dpp-demo-experiment:v0.1
     ports:
       - "8080:8080"
     environment:
